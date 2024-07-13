@@ -18,26 +18,26 @@ Develop a Django application that generates an XML job feed compatible with Inde
 
 ## Installation
 1. **Clone the repository:**
-   \```bash
+   \```
    git clone <repository_url>
    cd <repository_folder>
    \```
 
 2. **Set up a virtual environment:**
-   \```bash
+   \```
    python3 -m venv env
    source env/bin/activate
    \```
 
 3. **Install the dependencies:**
-   \```bash
+   \```
    pip install -r requirements.txt
    \```
 
 4. **Database setup:**
    - **Using SQLite (default):** Ensure `DATABASES` in `settings.py` is configured for SQLite.
    - **Using MySQL:** Update the `DATABASES` setting in `settings.py`:
-     \```python
+     \```
      DATABASES = {
          'default': {
              'ENGINE': 'django.db.backends.mysql',
@@ -51,7 +51,7 @@ Develop a Django application that generates an XML job feed compatible with Inde
      \```
 
 5. **Run migrations:**
-   \```bash
+   \```
    python manage.py migrate
    \```
 
@@ -62,7 +62,7 @@ Develop a Django application that generates an XML job feed compatible with Inde
 
 ## Usage
 1. **Start the development server:**
-   \```bash
+   \```
    python manage.py runserver
    \```
 
@@ -73,3 +73,38 @@ Develop a Django application that generates an XML job feed compatible with Inde
 
 3. **Access the XML job feed:**
    - Navigate to `http://127.0.0.1:8000/jobs/feed/`
+     
+## Automatic Updates
+To ensure the XML feed updates automatically when a new job is posted, Django signals are used.
+
+- **Signal configuration:** The `post_save` signal for the `Job` model triggers the XML feed regeneration.
+- **In `models.py`:**
+  \```
+  from django.db.models.signals import post_save
+  from django.dispatch import receiver
+  from .models import Job
+
+  @receiver(post_save, sender=Job)
+  def update_feed(sender, instance, created, **kwargs):
+      if created:
+          # Logic to update XML feed
+          pass
+  \```
+
+## Documentation
+
+### Dependencies and Configuration
+- Ensure all dependencies listed in `requirements.txt` are installed.
+- Configure the database settings in `settings.py` as per your choice of database (SQLite or MySQL).
+
+### Adding New Job Postings
+1. Access the Django admin interface at `http://127.0.0.1:8000/admin`.
+2. Log in with your superuser credentials.
+3. Navigate to the `Job` model and add new job postings.
+
+### Verifying the XML Feed Updates
+- After adding a new job posting, navigate to `http://127.0.0.1:8000/jobs/feed/` to verify the XML feed reflects the new job listing.
+
+---
+
+For further information on Indeed's XML feed specifications, refer to the official Indeed documentation.
